@@ -5,6 +5,13 @@ const thoughtController = {
     //get all thoughts
     getAllThoughts(req,res){
         Thought.find({})
+            .populate(
+                {
+                    path:'reactions',
+                    select: '-__v'
+                }
+            )
+            .select('-__v')
             .sort({createdAt:-1})
             .then(dbThoughtdata=>res.json(dbThoughtdata))
             .catch(err=>{
@@ -38,8 +45,15 @@ const thoughtController = {
     },
 
     //get single thoughtn by thoughtId
-    getSinlgeThought(req, res){
+    getSingleThought(req, res){
         Thought.findById({_id:req.params.thoughtId})
+            .populate(
+                {
+                    path:'reactions',
+                    select: '-__v'
+                }
+            )
+            .select('-__v')
             .then((dbThoughtdata)=>{
                 if(!dbThoughtdata){
                     return res.status(404).json({message: "No thought found with this ID!"});
@@ -55,10 +69,13 @@ const thoughtController = {
     // update thought
     updateThought({params,body},res){
         Thought.findOneAndUpdate(
-            {_id: params.thoughtId},body,{
+            {_id: params.thoughtId},
+            {$set: req.body},
+            {
                 new:true, 
                 runValidators:true
-        })
+            }
+        )
             .then(dbThoughtdata=>{
                 if(!dbThoughtdata){
                     res.status(404).json({message: "No thought found with this ID!"});
@@ -74,10 +91,13 @@ const thoughtController = {
     // delete thought
     removeThought({params},res){
         Thought.findOneAndRemove({_id:params.thoughtId})
-            .then(()=>{
+            .then((deletedThought)=>{
+                if(!deletedThought){
+                    return res.status(404).json({message:"No thought with this Id!"})
+                }
                 return User.findByIdAndUpdate(
                     {_id:params.userId},
-                    {$pull:{thought:_id}},
+                    {$pull:{thought:params.thoughtId}},
                     {new: true}
                 );
             })
@@ -97,7 +117,7 @@ const thoughtController = {
 
     // add reaction
     addReaction({params,body},res) {
-        Thought.findOneAndUpdate({_id:params.thoughtId},{$push:body},{new:true})
+        Thought.findOneAndUpdate({_id:params.thoughtId},{$push:{reactions:body}},{new:true})
             .then(dbThoughtdata=>{
                 if (!dbThoughtdata){
                     res.status(404).json({message: "No thought found with this ID! Can't add reaction."});
@@ -105,7 +125,7 @@ const thoughtController = {
                 }
                 console.log('Thoughts added successfully!');
                 res.json(dbThoughtdata);
-            })    //mimic replay update on comments need to check
+            })    
             .catch(err=>{
                 console.log(err);
                 res.status(500).json(err);
@@ -113,8 +133,8 @@ const thoughtController = {
     },
 
     //update reaction
-    updateReaction({params, body},res){///body need to modify
-        Thought.findOneAndUpdate({_id:params.thoughtId},{body},{new:true})//what is can't find this reaction
+    updateReaction({params, body},res){
+        Thought.findOneAndUpdate({_id:params.thoughtId},{$set:{reactions:body}},{new:true})
             .then(dbThoughtdata=>{
                 if (!dbThoughtdata){
                     res.status(404).json({message: "No thought found with this ID! Can't add reaction."});
@@ -130,7 +150,12 @@ const thoughtController = {
 
     //remove reaction
     removeReaction({params},res){
-        Thought.findOneAndUpdate({_id:params.thoughtId},)
+        Thought.findOneAndUpdate({_id:params.thoughtId},{$pull:{reactions:params.reactionId}},{new:true})
+            .then (dbThoughtdata=>res.json(dbThoughtdata))
+            .catch(err=>{
+                console.log(err);
+                res.status(500).json(err);
+            })
     }
 }
 
