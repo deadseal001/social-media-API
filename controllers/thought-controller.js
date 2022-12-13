@@ -72,7 +72,7 @@ const thoughtController = {
     },
 
     // delete thought
-    removeThought({params,body},res){
+    removeThought({params},res){
         Thought.findOneAndRemove({_id:params.thoughtId})
             .then(()=>{
                 return User.findByIdAndUpdate(
@@ -83,7 +83,7 @@ const thoughtController = {
             })
             .then(dbThoughtdata=>{
                 if(!dbThoughtdata){
-                    res.status(404).json({message: 'No user found with this ID!'});
+                    res.status(404).json({message: 'No thought found with this ID!'});
                     return;
                 }
                 console.log('Thoughts removed successfully!');
@@ -96,7 +96,42 @@ const thoughtController = {
     },
 
     // add reaction
-    //addReaction
+    addReaction({params,body},res) {
+        Thought.findOneAndUpdate({_id:params.thoughtId},{$push:body},{new:true})
+            .then(dbThoughtdata=>{
+                if (!dbThoughtdata){
+                    res.status(404).json({message: "No thought found with this ID! Can't add reaction."});
+                    return;
+                }
+                console.log('Thoughts added successfully!');
+                res.json(dbThoughtdata);
+            })    //mimic replay update on comments need to check
+            .catch(err=>{
+                console.log(err);
+                res.status(500).json(err);
+            });
+    },
+
+    //update reaction
+    updateReaction({params, body},res){///body need to modify
+        Thought.findOneAndUpdate({_id:params.thoughtId},{body},{new:true})//what is can't find this reaction
+            .then(dbThoughtdata=>{
+                if (!dbThoughtdata){
+                    res.status(404).json({message: "No thought found with this ID! Can't add reaction."});
+                    return;
+                }
+                res.json(dbThoughtdata);
+            })
+            .catch(err=>{
+                console.log(err);
+                res.status(500).json(err);
+            })
+    },
+
+    //remove reaction
+    removeReaction({params},res){
+        Thought.findOneAndUpdate({_id:params.thoughtId},)
+    }
 }
 
-module.exports = router;
+module.exports = thoughtController;//double check
