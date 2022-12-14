@@ -19,7 +19,7 @@ router
   .route('/:userId')
   .post(addThought);  
 
-// /api/thoughts/<userId>/<thougtId>     //route should have two ids
+// /api/thoughts/<userId>/<thougtId>     
 router
   .route('/:userId/:thoughtId')
   .get(getSingleThought)
@@ -27,8 +27,8 @@ router
   .delete(removeThought)
   .post(addReaction);
 
-// /api/thoughts/<userId>/<thoughtId>/<reactionId>
-router.route('/:userId/:thoughtId/:reactionId')
+// /api/thoughts/<thoughtId>/reactions/<reactionId>
+router.route('/:thoughtId/reactions/:reactionId')
   .put(updateReaction)
   .delete(removeReaction);
 

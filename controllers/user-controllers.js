@@ -21,7 +21,10 @@ const userController ={
     createUser({body},res){
         User.create(body)
             .then(dbUserdata=>res.json(dbUserdata))
-            .catch(err=>res.json(err));
+            .catch(err=>{
+                console.log(err);
+                res.status(500).json(err);
+            });
     },
 
     //get user by Id
@@ -70,10 +73,16 @@ const userController ={
     },
 
 
-    //deleteUser
+    //deleteUser  add function to also delete thoughts of ths user
     deleteUser({params},res){
         User.findOneAndDelete({_id: params.id})
-            .then(dbUserdata=>res.json(dbUserdata))
+            .then(dbUserdata=>{
+                if(!dbUserdata){
+                    return res.status(404).json({message: "No user with this id!"});
+                }
+                Thought.deleteMany({_id: {$in: dbUserdata.thoughts}}) 
+                res.json(dbUserdata)
+            })
             .catch(err=>{
                 console.log(err);
                 res.json(err)
