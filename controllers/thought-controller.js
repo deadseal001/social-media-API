@@ -1,5 +1,4 @@
 const { Thought, User } = require("../models");
-const { findById } = require("../models/User");// what this one is doing here?
 
 const thoughtController = {
     //get all thoughts
