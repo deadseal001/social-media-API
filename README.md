@@ -54,6 +54,7 @@ Wenbo Li, GitHub: https://github.com/deadseal001
 <a name="Demos"></a>
 ## Demos
 
-Screenshot:
+Screenshot:<img width="1256" alt="Screenshot 2022-12-16 at 12 15 46 AM" src="https://user-images.githubusercontent.com/110753777/208035453-a5695fbb-84fe-42a1-90ad-8d0eba032bbe.png">
+
 
 Demo video: https://watch.screencastify.com/v/VQ4DuD0V2fdCDiAP9f0t
