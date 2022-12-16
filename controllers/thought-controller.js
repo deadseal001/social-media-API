@@ -44,8 +44,8 @@ const thoughtController = {
     },
 
     //get single thoughtn by thoughtId
-    getSingleThought(req, res){
-        Thought.findById({_id:req.params.thoughtId})
+    getSingleThought({params}, res){
+        Thought.findById({_id:params.thoughtId})
             .populate(
                 {
                     path:'reactions',
@@ -69,7 +69,7 @@ const thoughtController = {
     updateThought({params,body},res){
         Thought.findOneAndUpdate(
             {_id: params.thoughtId},
-            {$set: req.body},
+            {$set:body},
             {
                 new:true, 
                 runValidators:true
@@ -96,7 +96,7 @@ const thoughtController = {
                 }
                 return User.findByIdAndUpdate(
                     {_id:params.userId},
-                    {$pull:{thought:params.thoughtId}},
+                    {$pull:{thoughts:params.thoughtId}},
                     {new: true}
                 );
             })
@@ -149,7 +149,7 @@ const thoughtController = {
 
     //remove reaction
     removeReaction({params},res){
-        Thought.findOneAndUpdate({_id:params.thoughtId},{$pull:{reactions:params.reactionId}},{new:true})
+        Thought.findOneAndUpdate({_id:params.thoughtId},{$pull:{reactions:{_id:params.reactionId}}},{new:true})
             .then (dbThoughtdata=>res.json(dbThoughtdata))
             .catch(err=>{
                 console.log(err);

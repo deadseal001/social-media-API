@@ -75,14 +75,14 @@ const userController ={
 
     //deleteUser  add function to also delete thoughts of ths user
     deleteUser({params},res){
-        User.findOneAndDelete({_id: params.id})
+        User.findOneAndDelete({_id: params.userId})
             .then(dbUserdata=>{
                 if(!dbUserdata){
                     return res.status(404).json({message: "No user with this id!"});
                 }
-                Thought.deleteMany({_id: {$in: dbUserdata.thoughts}}) 
-                res.json(dbUserdata)
+                return Thought.deleteMany({username:dbUserdata.username},{new:true}) 
             })
+            .then(result=> res.json(result))
             .catch(err=>{
                 console.log(err);
                 res.json(err)
@@ -113,7 +113,7 @@ const userController ={
         User.findOneAndUpdate(
             {_id: params.userId},
             {$pull:{friends:params.friendId}},
-            {new:ture}
+            {new:true}
         )
         .then(dbUserdata=>{
             if (!dbUserdata){
