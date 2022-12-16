@@ -24,7 +24,10 @@ router
   .route('/:userId/:thoughtId')
   .get(getSingleThought)
   .put(updateThought)
-  .delete(removeThought)
+  .delete(removeThought);
+
+  router
+  .route('/:thoughtId/reactions')
   .post(addReaction);
 
 // /api/thoughts/<thoughtId>/reactions/<reactionId>
